@@ -15,11 +15,12 @@ const bodyContainer = document
 const headerNavigationContainer = headerContainer.querySelector('.trip-controls__navigation');
 const headerFiltersContainer = headerContainer.querySelector('.trip-controls__filters');
 
+renderItem(eventsContainer, sortTemplate(), importPositions.afterBegin);
+renderItem(headerFiltersContainer, filterTemplate(), importPositions.beforeEnd);
 renderItem(eventsContainer, formEditTemplate(), importPositions.beforeEnd);
 renderItem(eventsContainer, formCreationTemplate(), importPositions.beforeEnd);
 renderItem(headerNavigationContainer, menuTemplate(), importPositions.beforeEnd);
-renderItem(headerFiltersContainer, filterTemplate(), importPositions.beforeEnd);
-renderItem(bodyContainer, sortTemplate(), importPositions.beforeEnd);
+
 
 for (let i = 0; i < 3; i++) {
   renderItem(bodyContainer, listedTravelTemplate(), importPositions.beforeEnd);
