@@ -1,47 +1,6 @@
 import dayjs from 'dayjs';
-
-const eventTypes = [
-  'taxi',
-  'bus',
-  'train',
-  'ship',
-  'drive',
-  'flight',
-  'check-in',
-  'sightseeing',
-  'restaurant'
-];
-
-const destinations = [
-  'Geneva',
-  'Amsterdam',
-  'Moscow',
-  'Yekaterinburg',
-  'Saint Petersburg',
-  'Ufa',
-  'Kazan',
-  'Chelyabinsk',
-  'Samara',
-  'Phnom Penh',
-  'Omsk',
-  'Cappadocia',
-  'Rome',
-  'Toronto',
-];
-
-const sentences = [
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  'Cras aliquet varius magna, non porta ligula feugiat eget.',
-  'Fusce tristique felis at fermentum pharetra.',
-  'Aliquam id orci ut lectus varius viverra.',
-  'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
-  'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.',
-  'Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.',
-  'Sed sed nisi sed augue convallis suscipit in sed felis.',
-  'Aliquam erat volutpat.',
-  'Nunc fermentum tortor ac porta dapibus.',
-  'In rutrum ac purus sit amet tempus.'
-];
+import { destinations } from './destinations';
+import { eventTypes } from './event-types';
 
 const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(min, max));
@@ -56,9 +15,9 @@ const getRandomElement = (items) => {
   return {id, element};
 };
 
-const getType = () => getRandomElement(eventTypes);
+const getType = () => getRandomElement(eventTypes());
 
-const getDestination = () => getRandomElement(destinations);
+const getDestination = () => getRandomElement(destinations());
 
 const getPrice = () => getRandomInteger(10, 100) * 10;
 
@@ -129,14 +88,29 @@ const getOffers = () => {
 };
 
 const getDescription = () => {
+  const sentences = [
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+    'Cras aliquet varius magna, non porta ligula feugiat eget.',
+    'Fusce tristique felis at fermentum pharetra.',
+    'Aliquam id orci ut lectus varius viverra.',
+    'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
+    'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.',
+    'Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.',
+    'Sed sed nisi sed augue convallis suscipit in sed felis.',
+    'Aliquam erat volutpat.',
+    'Nunc fermentum tortor ac porta dapibus.',
+    'In rutrum ac purus sit amet tempus.'
+  ];
   const sentencesSet = sentences;
   const sentencesCount = getRandomInteger(1, 5);
   const description = [];
+
   for (let i = 0; i < sentencesCount; i++) {
     const nextElement = getRandomElement(sentences);
     description.push(nextElement.element);
     sentencesSet.splice(nextElement.id, 1);
   }
+
   return description.join(' ');
 };
 

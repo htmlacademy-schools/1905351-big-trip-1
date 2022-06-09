@@ -1,11 +1,11 @@
-import { menuTemplate } from './view/menu';
-import { travelInfoTemplate } from './view/route-info';
-import { filterTemplate } from './view/filter';
-import { sortTemplate } from './view/sort';
-import { formCreationTemplate } from './view/form-creation';
-import { formEditTemplate } from './view/form-edit';
-import { travelListTemplate } from './view/travel-list';
-import { listedTravelTemplate } from './view/listed-travel';
+import MenuView from './view/menu';
+import RouteInfoView from './view/route-info';
+import FiltersView from './view/filter';
+import SortingView from './view/sort';
+import CreationFormView from './view/form-creation';
+import EditFormView from './view/form-edit';
+import TravelListView from './view/travel-list';
+import TripEventsListView from './view/listed-travel';
 import { renderItem, importPositions } from './rendering';
 import { generatePoint } from './mock/event-point';
 
@@ -18,17 +18,44 @@ const infoTripContainer = headerContainer.querySelector('.trip-main');
 const headerNavigationContainer = headerContainer.querySelector('.trip-controls__navigation');
 const headerFiltersContainer = headerContainer.querySelector('.trip-controls__filters');
 
-renderItem(eventsContainer, travelListTemplate(), importPositions.beforeEnd);
+const travelListContainer = new TravelListView();
 
-const tripEventsListContainer = eventsContainer.querySelector('.trip-events__list');
+renderItem(eventsContainer, travelListContainer.element, importPositions.beforeEnd);
+renderItem(infoTripContainer, new RouteInfoView(trips.slice(1, TRIP_POINTS_COUNT)).element, importPositions.afterBegin);
+renderItem(eventsContainer, new SortingView().element, importPositions.afterBegin);
+renderItem(headerFiltersContainer, new FiltersView().element, importPositions.beforeEnd);
+renderItem(travelListContainer.element, new CreationFormView(trips[0]).element, importPositions.afterBegin);
+renderItem(headerNavigationContainer, new MenuView().element, importPositions.beforeEnd);
 
-renderItem(infoTripContainer, travelInfoTemplate(trips.slice(1, TRIP_POINTS_COUNT)), importPositions.afterBegin);
-renderItem(eventsContainer, sortTemplate(), importPositions.afterBegin);
-renderItem(headerFiltersContainer, filterTemplate(), importPositions.beforeEnd);
-renderItem(tripEventsListContainer, formEditTemplate(trips[1]), importPositions.afterBegin);
-renderItem(tripEventsListContainer, formCreationTemplate(trips[0]), importPositions.afterBegin);
-renderItem(headerNavigationContainer, menuTemplate(), importPositions.beforeEnd);
+const renderTripPoints = (eventListElement, event) => {
+  const eventItemComponent = new TripEventsListView(event);
+  const eventEditComponent = new EditFormView(event);
 
-for (let i = 2; i < TRIP_POINTS_COUNT; i++) {
-  renderItem(tripEventsListContainer, listedTravelTemplate(trips[i]), importPositions.beforeEnd);
+  const replaceFormToItem = () => eventListElement.replaceChild(eventItemComponent.element, eventEditComponent.element);
+  const replaceItemToForm = () => eventListElement.replaceChild(eventEditComponent.element, eventItemComponent.element);
+
+  const onEscKeyDown = (evt) => {
+    if(evt.key === 'Escape') {
+      evt.preventDefault();
+      replaceFormToItem();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+
+  eventItemComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceItemToForm();
+    document.addEventListener('keydown', onEscKeyDown);
+  });
+
+  eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceFormToItem();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
+
+  renderItem(eventListElement, eventItemComponent.element, importPositions.beforeEnd);
+};
+
+for (let i = 1; i < TRIP_POINTS_COUNT; i++) {
+  renderTripPoints(travelListContainer.element, trips[i]);
 }

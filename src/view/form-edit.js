@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import {destinations} from '../mock/destinations';
 import {eventTypes} from '../mock/event-types';
+import {createHTMLElement} from '../rendering';
 
 export const formEditTemplate = (tripEvent) => {
   const {offers, destination, type, dateTo, dateFrom, basePrice} = tripEvent;
@@ -12,6 +13,7 @@ export const formEditTemplate = (tripEvent) => {
     const offerName = offer.title;
     const offerPrice = offer.price;
     const offerType = offer.type;
+
     return `<div class="event__offer-selector">
               <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-1" type="checkbox" name="event-offer-${offerType}"${isChecked}>
               <label class="event__offer-label" for="event-offer-name-1">
@@ -21,7 +23,7 @@ export const formEditTemplate = (tripEvent) => {
               </label>
             </div>`;
   };
-  const createdOfferItems = offers.map(createOfferItem).join('');
+
   const createOffersList = (offerItems) => {
     if (offerItems.length !== 0){
       return `<section class="event__section  event__section--offers">
@@ -34,6 +36,7 @@ export const formEditTemplate = (tripEvent) => {
     }
     return '';
   };
+  const createdOfferItems = offers.map(createOfferItem).join('');
   const offersList = createOffersList(createdOfferItems);
 
   const createDestinationOption = (city) => (`<option value="${city}"></option>`);
@@ -43,15 +46,18 @@ export const formEditTemplate = (tripEvent) => {
     const createType = (currentType) => {
       const isChecked = currentType === chosenEventType ? 'checked=""' : '';
       const label = currentType.charAt(0).toUpperCase() + currentType.slice(1);
+
       return `<div class="event__type-item">
                           <input id="event-type-${currentType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${currentType}" ${isChecked}>
                           <label class="event__type-label  event__type-label--${currentType}" for="event-type-${currentType}-1">${label}</label>
                         </div>`;
     };
+
     return types.map(createType).join('');
   };
   const eventTypeItems = createEventTypes(eventTypes(), type);
   const eventTypeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+
   return (`<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
@@ -112,3 +118,28 @@ export const formEditTemplate = (tripEvent) => {
               </form>
             </li>`);
 };
+
+export default class EditFormView {
+  #element = null;
+  #tripEvent = null;
+
+  constructor(tripEvent) {
+    this.#tripEvent = tripEvent;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createHTMLElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return formEditTemplate(this.#tripEvent);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

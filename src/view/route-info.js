@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {createHTMLElement} from '../rendering';
 
 export const travelInfoTemplate = (tripEvents) => {
   const travelPath = tripEvents.map((trip) => trip.destination.name).join(' — ');
@@ -25,3 +26,29 @@ export const travelInfoTemplate = (tripEvents) => {
             </p>
           </section>`;
 };
+
+export default class RouteInfoView {
+  #element = null;
+  #tripEvent = null;
+
+  constructor(tripEvent) {
+    this.#tripEvent = tripEvent;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createHTMLElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return travelInfoTemplate(this.#tripEvent);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+
