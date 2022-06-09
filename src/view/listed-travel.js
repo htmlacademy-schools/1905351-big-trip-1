@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import {createHTMLElement} from '../rendering';
 export const listedTravelTemplate = (tripEvent) => {
   const {offers, destination, type, dateTo, dateFrom, basePrice, isFavorite, tripDuration} = tripEvent;
   const startDay = dayjs(dateFrom).format('MMM D');
@@ -74,3 +75,29 @@ export const listedTravelTemplate = (tripEvent) => {
               </div>
             </li>`;
 };
+
+export default class TripEventsListView {
+  #element = null;
+  #tripEvent = null;
+
+  constructor(tripEvent) {
+    this.#tripEvent = tripEvent;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createHTMLElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return listedTravelTemplate(this.#tripEvent);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
+

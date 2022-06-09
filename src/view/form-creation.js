@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
-import {destinations} from '../mock/destinations';
-import {eventTypes} from '../mock/event-types';
+import { destinations } from '../mock/destinations';
+import { eventTypes } from '../mock/event-types';
+import { createHTMLElement } from '../rendering';
 
 export const formCreationTemplate = (tripEvent) => {
   const {offers, destination} = tripEvent;
@@ -19,8 +20,9 @@ export const formCreationTemplate = (tripEvent) => {
                       </div>
     `;
   };
-  const addableOfferElements = offers.map(createOfferElement).join('');
+
   const createOfferList = (addableOffers) => {
+    const addableOfferElements = offers.map(createOfferElement).join('');
     if (addableOffers.length !== 0){
       return `<section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
@@ -34,8 +36,8 @@ export const formCreationTemplate = (tripEvent) => {
   const translatePhotoToHTML = (photo) => (`<img class="event__photo" src="${photo.src}" alt="${photo.description}">`);
   const photosList = destination.pictures.map(translatePhotoToHTML).join('');
 
-  const createLocationOption = (city) => (`<option value="${city}"></option>`);
-  const locationOptions = destinations().map(createLocationOption).join('');
+  const createDestinationOption = (city) => (`<option value="${city}"></option>`);
+  const destinationOptions = destinations().map(createDestinationOption).join('');
 
   const createEventTypes = (chosenEventType) => {
     const types = eventTypes();
@@ -49,7 +51,7 @@ export const formCreationTemplate = (tripEvent) => {
     };
     return types.map(createType).join('');
   };
-  const eventType = 'check-in';
+  const eventType = tripEvent.type;
   const eventTypeItems = createEventTypes(eventType);
   const eventTypeLabel = eventType.charAt(0).toUpperCase() + eventType.slice(1);
   return (
@@ -77,7 +79,7 @@ export const formCreationTemplate = (tripEvent) => {
                     </label>
                     <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="" list="destination-list-1">
                     <datalist id="destination-list-1">
-                      ${locationOptions}
+                      ${destinationOptions}
                     </datalist>
                   </div>
 
@@ -117,3 +119,28 @@ export const formCreationTemplate = (tripEvent) => {
             </li>`
   );
 };
+
+export default class CreationFormView {
+  #element = null;
+  #tripEvent = null;
+
+  constructor(tripEvent) {
+    this.#tripEvent = tripEvent;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createHTMLElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return formCreationTemplate(this.#tripEvent);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}

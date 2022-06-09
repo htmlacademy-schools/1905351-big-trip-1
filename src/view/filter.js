@@ -1,3 +1,5 @@
+import {createHTMLElement} from '../rendering';
+
 export const filterTemplate = () => `<form class="trip-filters" action="#" method="get">
                 <div class="trip-filters__filter">
                   <input id="filter-everything" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="everything">
@@ -16,3 +18,23 @@ export const filterTemplate = () => `<form class="trip-filters" action="#" metho
 
                 <button class="visually-hidden" type="submit">Accept filter</button>
               </form>`;
+
+export default class FiltersView {
+  #element = null;
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createHTMLElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return filterTemplate();
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
