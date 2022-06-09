@@ -1,0 +1,16 @@
+export const destinations = () => ([
+  'Geneva',
+  'Amsterdam',
+  'Moscow',
+  'Yekaterinburg',
+  'Saint Petersburg',
+  'Ufa',
+  'Kazan',
+  'Chelyabinsk',
+  'Samara',
+  'Phnom Penh',
+  'Omsk',
+  'Cappadocia',
+  'Rome',
+  'Toronto',
+]);
