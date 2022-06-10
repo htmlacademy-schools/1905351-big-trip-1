@@ -1,62 +1,22 @@
 import dayjs from 'dayjs';
 import {destinations} from '../mock/destinations';
 import {eventTypes} from '../mock/event-types';
-import {createHTMLElement} from '../rendering';
+import AbstractClassView from './abstract-class';
+import {
+  createDestinationsListComponent,
+  createEventTypesListComponent,
+  createOfferListComponent
+} from '../utils/component-create';
+
 
 export const formEditTemplate = (tripEvent) => {
   const {offers, destination, type, dateTo, dateFrom, basePrice} = tripEvent;
   const startDatetime = dayjs(dateFrom).format('DD/MM/YY HH:mm ');
   const endDatetime = dayjs(dateTo).format('DD/MM/YY HH:mm');
-
-  const createOfferItem = (offer) => {
-    const isChecked = offer.isActive ? ' checked=""' : '';
-    const offerName = offer.title;
-    const offerPrice = offer.price;
-    const offerType = offer.type;
-
-    return `<div class="event__offer-selector">
-              <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offerType}-1" type="checkbox" name="event-offer-${offerType}"${isChecked}>
-              <label class="event__offer-label" for="event-offer-name-1">
-                <span class="event__offer-title">${offerName}</span>
-                +€&nbsp;
-                <span class="event__offer-price">${offerPrice}</span>
-              </label>
-            </div>`;
-  };
-
-  const createOffersList = (offerItems) => {
-    if (offerItems.length !== 0){
-      return `<section class="event__section  event__section--offers">
-                    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-                    <div class="event__available-offers">
-                      ${offerItems}
-                    </div>
-                  </section>`;
-    }
-    return '';
-  };
-  const createdOfferItems = offers.map(createOfferItem).join('');
-  const offersList = createOffersList(createdOfferItems);
-
-  const createDestinationOption = (city) => (`<option value="${city}"></option>`);
-  const destinationOptions = destinations().map(createDestinationOption).join('');
-
-  const createEventTypes = (types = eventTypes(), chosenEventType) => {
-    const createType = (currentType) => {
-      const isChecked = currentType === chosenEventType ? 'checked=""' : '';
-      const label = currentType.charAt(0).toUpperCase() + currentType.slice(1);
-
-      return `<div class="event__type-item">
-                          <input id="event-type-${currentType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${currentType}" ${isChecked}>
-                          <label class="event__type-label  event__type-label--${currentType}" for="event-type-${currentType}-1">${label}</label>
-                        </div>`;
-    };
-
-    return types.map(createType).join('');
-  };
-  const eventTypeItems = createEventTypes(eventTypes(), type);
+  const offersList = createOfferListComponent(offers);
   const eventTypeLabel = type.charAt(0).toUpperCase() + type.slice(1);
+  const eventTypeItems = createEventTypesListComponent(eventTypes(), type);
+  const destinationOptions = createDestinationsListComponent(destinations);
 
   return (`<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -119,27 +79,35 @@ export const formEditTemplate = (tripEvent) => {
             </li>`);
 };
 
-export default class EditFormView {
-  #element = null;
+export default class EditFormView extends AbstractClassView{
   #tripEvent = null;
 
   constructor(tripEvent) {
+    super();
     this.#tripEvent = tripEvent;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createHTMLElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return formEditTemplate(this.#tripEvent);
   }
 
-  removeElement() {
-    this.#element = null;
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  setViewClickHandler = (callback) => {
+    this._callback.viewClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#viewClickHandler);
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  }
+
+  #viewClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.viewClick();
   }
 }

@@ -7,11 +7,12 @@ import EditFormView from './view/form-edit';
 import TravelListView from './view/travel-list';
 import TripEventsListView from './view/listed-travel';
 import NoEntriesMessageView from './view/no-entries';
-import { renderItem, importPositions } from './rendering';
+import { renderItem, importPositions } from './utils/rendering';
 import { generatePoint } from './mock/event-point';
 
 const TRIP_POINTS_COUNT = 20;
 const trips = Array.from({length: TRIP_POINTS_COUNT}, generatePoint).sort((a, b) => a.dateFrom - b.dateFrom);
+
 const eventsContainer = document.querySelector('.trip-events');
 const headerContainer = document.querySelector('.page-header');
 const infoTripContainer = headerContainer.querySelector('.trip-main');
@@ -20,8 +21,8 @@ const headerFiltersContainer = headerContainer.querySelector('.trip-controls__fi
 
 const travelListContainer = new TravelListView();
 
-renderItem(headerFiltersContainer, new FiltersView().element, importPositions.beforeEnd);
 renderItem(headerNavigationContainer, new MenuView().element, importPositions.beforeEnd);
+renderItem(headerFiltersContainer, new FiltersView().element, importPositions.beforeEnd);
 
 if (trips?.length > 0) {
   renderItem(eventsContainer, new SortingView().element, importPositions.afterBegin);
@@ -47,17 +48,17 @@ const renderTripPoints = (eventListElement, event) => {
     }
   };
 
-  eventItemComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  eventItemComponent.setEditClickHandler(() => {
     replaceItemToForm();
     document.addEventListener('keydown', onEscKeyDown);
   });
 
-  eventEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+  eventEditComponent.setViewClickHandler(() => {
     replaceFormToItem();
+    document.removeEventListener('keydown', onEscKeyDown);
   });
 
-  eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-    evt.preventDefault();
+  eventEditComponent.setFormSubmitHandler(() => {
     replaceFormToItem();
     document.removeEventListener('keydown', onEscKeyDown);
   });

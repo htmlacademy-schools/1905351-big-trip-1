@@ -84,7 +84,7 @@ const getOffers = () => {
     titles.splice(nextTitleItem.id, 1);
   }
 
-  return res;
+  return res.sort((a, b) => b.isActive - a.isActive);
 };
 
 const getDescription = () => {

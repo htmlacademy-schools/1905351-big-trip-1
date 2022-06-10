@@ -1,4 +1,4 @@
-import { createHTMLElement } from '../rendering';
+import { createHTMLElement } from '../utils/rendering';
 
 const noEntriesTemplate = () =>
   `<p class="trip-events__msg">
