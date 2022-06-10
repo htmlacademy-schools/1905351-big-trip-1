@@ -1,59 +1,23 @@
 import dayjs from 'dayjs';
 import { destinations } from '../mock/destinations';
 import { eventTypes } from '../mock/event-types';
-import { createHTMLElement } from '../rendering';
+import AbstractClassView from './abstract-class';
+import {
+  createDestinationsListComponent,
+  createEventTypesListComponent,
+  createOfferListComponent, createPicturesListComponent
+} from '../utils/component-create';
 
 export const formCreationTemplate = (tripEvent) => {
   const {offers, destination} = tripEvent;
-  const templateDatetime = dayjs().add(14, 'day').hour(10).minute(0).format('DD/MM/YY HH:mm');
-
-  const createOfferElement = (offer) => {
-    const { title, price, type } = offer;
-    return `<div class="event__available-offers">
-                      <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-1" type="checkbox" name="event-offer-${type}" >
-                        <label class="event__offer-label" for="event-offer-name-1">
-                          <span class="event__offer-title">${title}</span>
-                          &plus;&euro;&nbsp;
-                          <span class="event__offer-price">${price}</span>
-                        </label>
-                      </div>
-    `;
-  };
-
-  const createOfferList = (addableOffers) => {
-    const addableOfferElements = offers.map(createOfferElement).join('');
-    if (addableOffers.length !== 0){
-      return `<section class="event__section  event__section--offers">
-                    <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-                    ${addableOfferElements}
-                  </section>`;
-    }
-    return '';
-  };
-
-  const offerList = createOfferList(offers);
-  const translatePhotoToHTML = (photo) => (`<img class="event__photo" src="${photo.src}" alt="${photo.description}">`);
-  const photosList = destination.pictures.map(translatePhotoToHTML).join('');
-
-  const createDestinationOption = (city) => (`<option value="${city}"></option>`);
-  const destinationOptions = destinations().map(createDestinationOption).join('');
-
-  const createEventTypes = (chosenEventType) => {
-    const types = eventTypes();
-    const createType = (currentType) => {
-      const isChecked = currentType === chosenEventType ? 'checked=""' : '';
-      const label = currentType.charAt(0).toUpperCase() + currentType.slice(1);
-      return `<div class="event__type-item">
-                          <input id="event-type-${currentType}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${currentType}" ${isChecked}>
-                          <label class="event__type-label  event__type-label--${currentType}" for="event-type-${currentType}-1">${label}</label>
-                        </div>`;
-    };
-    return types.map(createType).join('');
-  };
   const eventType = tripEvent.type;
-  const eventTypeItems = createEventTypes(eventType);
+  const templateDatetime = dayjs().add(1, 'day').hour(10).minute(0).format('DD/MM/YY HH:mm');
+  const offersList = createOfferListComponent(offers, true);
+  const eventTypeItems = createEventTypesListComponent(eventTypes(), eventType);
+  const photosList = createPicturesListComponent(destination.pictures);
+  const destinationOptions = createDestinationsListComponent(destinations);
   const eventTypeLabel = eventType.charAt(0).toUpperCase() + eventType.slice(1);
+
   return (
     `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -103,7 +67,7 @@ export const formCreationTemplate = (tripEvent) => {
                   <button class="event__reset-btn" type="reset">Cancel</button>
                 </header>
                 <section class="event__details">
-                  ${offerList}
+                  ${offersList}
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
                     <p class="event__destination-description">${destination.description}</p>
@@ -120,27 +84,15 @@ export const formCreationTemplate = (tripEvent) => {
   );
 };
 
-export default class CreationFormView {
-  #element = null;
+export default class CreationFormView extends AbstractClassView {
   #tripEvent = null;
 
   constructor(tripEvent) {
+    super();
     this.#tripEvent = tripEvent;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createHTMLElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return formCreationTemplate(this.#tripEvent);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
-import {createHTMLElement} from '../rendering';
+import AbstractClassView from './abstract-class';
+import {createTripEventsListComponent} from '../utils/component-create';
+
 export const listedTravelTemplate = (tripEvent) => {
   const {offers, destination, type, dateTo, dateFrom, basePrice, isFavorite, tripDuration} = tripEvent;
   const startDay = dayjs(dateFrom).format('MMM D');
@@ -8,33 +10,23 @@ export const listedTravelTemplate = (tripEvent) => {
   const startDatetime = dayjs(dateFrom).format('YYYY-MM-DDTHH:mm');
   const endTime = dayjs(dateTo).format('HH:mm');
   const endDatetime = dayjs(dateTo).format('YYYY-MM-DDTHH:mm');
-  const createOfferElement = (offer) => {
-    if (offer.isActive) {
-      const offerName = offer.title;
-      const offerPrice = offer.price;
-      return `<li class="event__offer">
-                    <span class="event__offer-title">${offerName}</span>
-                    &plus;&euro;&nbsp;
-                    <span class="event__offer-price">${offerPrice}</span>
-                  </li>`;
-    }
-  };
-  const offersItems = offers.map(createOfferElement).join('');
+  const tripEvents = createTripEventsListComponent(offers);
 
-  const formatDuration = (interval) => {
+  const formatDuration = (timeInterval) => {
     const result = [];
-    if (interval.days !== 0) {
-      result[0] = String(interval.days).padStart(2,'0');
-      result[0] += 'D';
+
+    if (timeInterval.days !== 0) {
+      result[0] = `${String(timeInterval.days).padStart(2,'0')} D`;
     }
-    if (interval.hours !== 0) {
-      result[1] = String(interval.hours).padStart(2,'0');
-      result[1] += 'H';
+
+    if (timeInterval.hours !== 0) {
+      result[1] = `${String(timeInterval.hours).padStart(2,'0')} H`;
     }
-    if (interval.minutes !== 0) {
-      result[2] = String(interval.minutes).padStart(2,'0');
-      result[2] += 'M';
+
+    if (timeInterval.minutes !== 0) {
+      result[2] = `${String(timeInterval.minutes).padStart(2,'0')} M`;
     }
+
     return result.join(' ');
   };
   const formattedDuration = formatDuration(tripDuration);
@@ -61,7 +53,7 @@ export const listedTravelTemplate = (tripEvent) => {
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">
-                ${offersItems}
+                ${tripEvents}
                 </ul>
                 <button class="event__favorite-btn ${getButtonClass}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
@@ -76,28 +68,26 @@ export const listedTravelTemplate = (tripEvent) => {
             </li>`;
 };
 
-export default class TripEventsListView {
-  #element = null;
+export default class TripEventsListView extends AbstractClassView {
   #tripEvent = null;
 
   constructor(tripEvent) {
+    super();
     this.#tripEvent = tripEvent;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createHTMLElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return listedTravelTemplate(this.#tripEvent);
   }
 
-  removeElement() {
-    this.#element = null;
+  setEditClickHandler = (callback) => {
+    this._callback.editClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  }
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
   }
 }
 

@@ -1,8 +1,10 @@
 import dayjs from 'dayjs';
-import {createHTMLElement} from '../rendering';
+import {createHTMLElement} from '../utils/rendering';
 
 export const travelInfoTemplate = (tripEvents) => {
-  const travelPath = tripEvents.map((trip) => trip.destination.name).join(' — ');
+  const travelPath = tripEvents.length <= 3
+    ? tripEvents.map((trip) => trip.destination.name).join(' — ')
+    : `${tripEvents[0].destination.name} — ... — ${tripEvents[tripEvents.length - 1].destination.name}`;
   const travelCost = tripEvents.reduce((sum, current) => sum + current.basePrice, 0);
 
   const isSameMonth = (firstDate, secondDate) => dayjs(firstDate.dateFrom).month() === dayjs(secondDate.dateFrom).month();
@@ -11,7 +13,7 @@ export const travelInfoTemplate = (tripEvents) => {
     .format(
       isSameMonth(tripEvents[0], tripEvents[tripEvents.length - 1])
         ? 'D'
-        : 'MMM D'
+        : 'D MMM'
     );
 
   return `<section class="trip-main__trip-info  trip-info">

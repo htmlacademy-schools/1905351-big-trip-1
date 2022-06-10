@@ -1,3 +1,5 @@
+import AbstractClassView from '../view/abstract-class';
+
 export const importPositions = {
   beforeBegin: 'beforebegin',
   beforeEnd: 'beforeend',
@@ -5,19 +7,22 @@ export const importPositions = {
   afterEnd: 'afterend'
 };
 
-export const renderItem = (container, item, place) => {
+export const renderItem = (container, component, place) => {
+  const parent = container instanceof AbstractClassView ? container.element : container;
+  const child = component instanceof AbstractClassView ? component.element : component;
+
   switch (place) {
     case importPositions.beforeBegin:
-      container.before(item);
+      parent.before(child);
       break;
     case importPositions.beforeEnd:
-      container.append(item);
+      parent.append(child);
       break;
     case importPositions.afterBegin:
-      container.prepend(item);
+      parent.prepend(child);
       break;
     case importPositions.afterEnd:
-      container.after(item);
+      parent.after(child);
       break;
   }
 };
