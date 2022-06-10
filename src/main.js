@@ -6,12 +6,12 @@ import CreationFormView from './view/form-creation';
 import EditFormView from './view/form-edit';
 import TravelListView from './view/travel-list';
 import TripEventsListView from './view/listed-travel';
+import NoEntriesMessageView from './view/no-entries';
 import { renderItem, importPositions } from './rendering';
 import { generatePoint } from './mock/event-point';
 
 const TRIP_POINTS_COUNT = 20;
 const trips = Array.from({length: TRIP_POINTS_COUNT}, generatePoint).sort((a, b) => a.dateFrom - b.dateFrom);
-
 const eventsContainer = document.querySelector('.trip-events');
 const headerContainer = document.querySelector('.page-header');
 const infoTripContainer = headerContainer.querySelector('.trip-main');
@@ -20,12 +20,17 @@ const headerFiltersContainer = headerContainer.querySelector('.trip-controls__fi
 
 const travelListContainer = new TravelListView();
 
-renderItem(eventsContainer, travelListContainer.element, importPositions.beforeEnd);
-renderItem(infoTripContainer, new RouteInfoView(trips.slice(1, TRIP_POINTS_COUNT)).element, importPositions.afterBegin);
-renderItem(eventsContainer, new SortingView().element, importPositions.afterBegin);
 renderItem(headerFiltersContainer, new FiltersView().element, importPositions.beforeEnd);
-renderItem(travelListContainer.element, new CreationFormView(trips[0]).element, importPositions.afterBegin);
 renderItem(headerNavigationContainer, new MenuView().element, importPositions.beforeEnd);
+
+if (trips?.length > 0) {
+  renderItem(eventsContainer, new SortingView().element, importPositions.afterBegin);
+  renderItem(eventsContainer, travelListContainer.element, importPositions.beforeEnd);
+  renderItem(travelListContainer.element, new CreationFormView(trips[0]).element, importPositions.afterBegin);
+  renderItem(infoTripContainer, new RouteInfoView(trips.slice(1, TRIP_POINTS_COUNT)).element, importPositions.afterBegin);
+} else {
+  renderItem(eventsContainer, new NoEntriesMessageView().element, importPositions.beforeEnd);
+}
 
 const renderTripPoints = (eventListElement, event) => {
   const eventItemComponent = new TripEventsListView(event);
@@ -45,6 +50,10 @@ const renderTripPoints = (eventListElement, event) => {
   eventItemComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
     replaceItemToForm();
     document.addEventListener('keydown', onEscKeyDown);
+  });
+
+  eventEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceFormToItem();
   });
 
   eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
