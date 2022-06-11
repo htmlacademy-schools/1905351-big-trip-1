@@ -1,3 +1,5 @@
+import { sortBy } from './constants';
+
 export const updateItems = (items, toUpdate) => {
   const index = items.findIndex((item) => item.id === toUpdate.id);
 
@@ -20,13 +22,13 @@ const durationSort = (a, b) => {
   return firstDuration - secondDuration;
 };
 
-export const sortItemsBy = (sortBy) => {
-  switch (sortBy) {
-    case 'datetime':
+export const sortItemsBy = (sortType) => {
+  switch (sortType) {
+    case sortBy.day:
       return (a,b) => a.dateFrom - b.dateFrom;
-    case 'duration':
+    case sortBy.duration:
       return durationSort;
-    case 'price':
+    case sortBy.price:
       return (a, b) => a.basePrice - b.basePrice;
     default:
       return 0;

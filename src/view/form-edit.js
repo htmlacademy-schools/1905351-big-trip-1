@@ -1,21 +1,25 @@
 import dayjs from 'dayjs';
 import { destinations, eventTypes } from '../utils/constants';
-import AbstractClassView from './abstract-class';
+import SmartView from './smart-view';
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 import {
   createDestinationsListComponent,
   createEventTypesListComponent,
-  createOfferListComponent
+  createOfferListComponent, createPicturesListComponent
 } from '../utils/component-create';
+import {generateDestination, getDuration} from '../utils/data-manager';
 
 
 export const formEditTemplate = (tripEvent) => {
   const {offers, destination, type, dateTo, dateFrom, basePrice} = tripEvent;
   const startDatetime = dayjs(dateFrom).format('DD/MM/YY HH:mm ');
   const endDatetime = dayjs(dateTo).format('DD/MM/YY HH:mm');
-  const offersList = createOfferListComponent(offers);
+  const offersList = createOfferListComponent(offers[type]);
   const eventTypeLabel = type.charAt(0).toUpperCase() + type.slice(1);
   const eventTypeItems = createEventTypesListComponent(eventTypes(), type);
   const destinationOptions = createDestinationsListComponent(destinations);
+  const photosList = createPicturesListComponent(destination.pictures);
 
   return (`<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
@@ -70,29 +74,148 @@ export const formEditTemplate = (tripEvent) => {
                 <section class="event__details">
                   ${offersList}
                   <section class="event__section  event__section--destination">
-                    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+                    ${destination.description ? '<h3 class="event__section-title  event__section-title--destination">Destination</h3>' : ''}
                     <p class="event__destination-description">${destination.description}</p>
+                    <div class="event__photos-container">
+                      <div class="event__photos-tape">
+                        ${photosList}
+                      </div>
+                    </div>
                   </section>
                 </section>
               </form>
             </li>`);
 };
 
-export default class EditFormView extends AbstractClassView{
-  #tripEvent = null;
+export default class EditFormView extends SmartView {
+  #datepickerFrom = null;
+  #datepickerTo = null;
 
-  constructor(tripEvent) {
+  constructor(point) {
     super();
-    this.#tripEvent = tripEvent;
+    this._point = EditFormView.parsePointToData(point);
+
+    this.#setInnerHandlers();
+    this.#setDatepicker();
   }
 
   get template() {
-    return formEditTemplate(this.#tripEvent);
+    return formEditTemplate(this._point);
   }
 
-  setFormSubmitHandler = (callback) => {
-    this._callback.formSubmit = callback;
-    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#datepickerFrom) {
+      this.#datepickerFrom.destroy();
+      this.#datepickerFrom = null;
+    }
+
+    if (this.#datepickerTo) {
+      this.#datepickerTo.destroy();
+      this.#datepickerTo = null;
+    }
+  }
+
+  reset = (point) => {
+    this.updateData(
+      EditFormView.parsePointToData(point),
+    );
+  }
+
+  #setDatepicker = () => {
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i' ,
+        defaultDate: this._point.dateFrom,
+        onChange: this.#dateFromChangeHandler
+      },
+    );
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._point.dateTo,
+        minDate: this._point.dateFrom,
+        onChange: this.#dateToChangeHandler
+      },
+    );
+  }
+
+  #dateFromChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateFrom: userDate.toISOString(),
+    });
+  }
+
+  #dateToChangeHandler = ([userDate]) => {
+    this.updateData({
+      dateTo: userDate.toISOString(),
+    });
+  }
+
+  restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.#setDatepicker();
+    this.setViewClickHandler(this._callback.viewClick);
+    this.setFormSubmitHandler(this._callback.formSubmit);
+  }
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#typeGroupClickHandler);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
+    this.element.querySelector('#event-start-time-1')
+      .addEventListener('change', this.#startTimeChangeHandler);
+    this.element.querySelector('#event-end-time-1')
+      .addEventListener('change', this.#endTimeChangeHandler);
+    this.element.querySelector('.event__input--price')
+      .addEventListener('change', this.#basePriceChangeHandler);
+  }
+
+  #typeGroupClickHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      type: evt.target.value
+    }, false);
+  }
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      destination: this.#getChangedLocation(evt.target.value)
+    }, false);
+  }
+
+  #startTimeChangeHandler = (evt) => {
+    evt.preventDefault();
+    const fromDate = new Date(this._point.dateFrom);
+    const toDate = new Date(this._point.dateTo);
+    this.updateData({
+      dateFrom: fromDate,
+      tripDuration: getDuration(fromDate, toDate)
+    }, true);
+  }
+
+  #endTimeChangeHandler = (evt) => {
+    evt.preventDefault();
+    const fromDate = new Date(this._point.dateFrom);
+    const toDate = new Date(this._point.dateTo);
+    this.updateData({
+      dateTo: toDate,
+      tripDuration: getDuration(fromDate, toDate)
+    }, true);
+  }
+
+  #basePriceChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      basePrice: evt.target.value
+    }, true);
   }
 
   setViewClickHandler = (callback) => {
@@ -100,13 +223,36 @@ export default class EditFormView extends AbstractClassView{
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#viewClickHandler);
   }
 
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.formSubmit();
-  }
-
   #viewClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.viewClick();
   }
+
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit(this._point);
+  }
+
+  static parsePointToData = (point) => ({ ...point });
+
+  #getChangedLocation = (locationName) => {
+    const allLocations = generateDestination();
+
+    for (let i = 0; i < allLocations.length; i++) {
+      if (allLocations[i].name === locationName) {
+        return allLocations[i];
+      }
+    }
+
+    return {
+      'name': '',
+      'description': null,
+      'pictures': []
+    };
+  };
 }

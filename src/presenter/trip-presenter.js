@@ -5,7 +5,7 @@ import RouteInfoView from '../view/route-info';
 import PointsListContainerView from '../view/travel-list';
 import NoEntriesMessageView from '../view/no-entries';
 import PointPresenter from './point-presenter';
-import CreationFormView from '../view/form-creation';
+// import CreationFormView from '../view/form-creation';
 import { sortBy } from '../utils/constants';
 import { sortItemsBy, updateItems } from '../utils/items-manager';
 import { renderItem, importPositions } from '../utils/rendering';
@@ -25,7 +25,6 @@ export default class TripPresenter {
 
   #tripPoints = [];
   #pointPresenter = new Map();
-
   #currentSortType = sortBy.day;
 
   constructor(mainElement) {
@@ -56,9 +55,9 @@ export default class TripPresenter {
     renderItem(this.#tripEventsElement, this.#tripPointsListElement, importPositions.beforeEnd);
   }
 
-  #renderCreationForm = () => {
-    renderItem(this.#tripPointsListElement, new CreationFormView(this.#tripPoints[0]), importPositions.beforeEnd);
-  }
+  // #renderCreationForm = () => {
+  //   renderItem(this.#tripPointsListElement, new CreationFormView(this.#tripPoints[0]), importPositions.beforeEnd);
+  // }
 
   #handleModeChange = () => {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
@@ -104,21 +103,19 @@ export default class TripPresenter {
   #renderMain = () => {
     renderItem(this.#headerNavigationContainer, this.#headerComponent, importPositions.beforeEnd);
     if (this.#tripPoints?.length > 0) {
-      this.#renderHeader();
       this.#renderSort();
-      this.#renderCreationForm();
+      // this.#renderCreationForm();
       this.#renderTripPointsListElement();
       this.#sortTasks(this.#currentSortType);
       this.#renderTripPointsList();
+      this.#renderHeader();
     } else {
       this.#renderNoTasks();
     }
   }
 
   #clearPointList = () => {
-    this.#pointPresenter.forEach((presenter) => {
-      presenter.destroy();
-    });
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
     this.#pointPresenter.clear();
   }
 }
