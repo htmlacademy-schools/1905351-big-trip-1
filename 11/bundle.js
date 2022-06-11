@@ -1337,9 +1337,11 @@ class EditFormView extends _smart_view__WEBPACK_IMPORTED_MODULE_2__["default"] {
       writable: true,
       value: evt => {
         evt.preventDefault();
+        const fromDate = new Date(this._point.dateFrom);
+        const toDate = new Date(this._point.dateTo);
         this.updateData({
-          dateFrom: this._point.dateFrom,
-          tripDuration: (0,_utils_data_manager__WEBPACK_IMPORTED_MODULE_6__.getDuration)(new Date(this._point.dateFrom), this._point.dateTo)
+          dateFrom: fromDate,
+          tripDuration: (0,_utils_data_manager__WEBPACK_IMPORTED_MODULE_6__.getDuration)(fromDate, toDate)
         }, true);
       }
     });
@@ -1348,9 +1350,11 @@ class EditFormView extends _smart_view__WEBPACK_IMPORTED_MODULE_2__["default"] {
       writable: true,
       value: evt => {
         evt.preventDefault();
+        const fromDate = new Date(this._point.dateFrom);
+        const toDate = new Date(this._point.dateTo);
         this.updateData({
-          dateTo: this._point.dateTo,
-          tripDuration: (0,_utils_data_manager__WEBPACK_IMPORTED_MODULE_6__.getDuration)(this._point.dateFrom, new Date(this._point.dateTo))
+          dateTo: toDate,
+          tripDuration: (0,_utils_data_manager__WEBPACK_IMPORTED_MODULE_6__.getDuration)(fromDate, toDate)
         }, true);
       }
     });
