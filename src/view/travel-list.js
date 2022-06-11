@@ -3,7 +3,7 @@ import AbstractClassView from './abstract-class';
 
 export const travelListTemplate = () => '<ul class="trip-events__list"></ul>';
 
-export default class TravelListView extends AbstractClassView {
+export default class PointsListContainerView extends AbstractClassView {
   #tripEvent = null;
 
   constructor(tripEvent) {

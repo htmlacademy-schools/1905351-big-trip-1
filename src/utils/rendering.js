@@ -33,3 +33,33 @@ export const createHTMLElement = (template) => {
 
   return newItem.firstChild;
 };
+
+export const replace = (replacer, itemToReplace) => {
+  if (itemToReplace === null || replacer === null) {
+    throw new Error('Replace element(s) are not defined');
+  }
+
+  const newChild = replacer instanceof AbstractClassView ? replacer.element : replacer;
+  const oldChild = itemToReplace instanceof AbstractClassView ? itemToReplace.element : itemToReplace;
+
+  const parent = oldChild.parentElement;
+
+  if (parent === null) {
+    throw new Error('There is no parent element');
+  }
+
+  parent.replaceChild(newChild, oldChild);
+};
+
+export const remove = (component) => {
+  if (component === null) {
+    return;
+  }
+
+  if (!(component instanceof AbstractClassView)) {
+    throw new Error('This item is not removable');
+  }
+
+  component.element.remove();
+  component.removeElement();
+};

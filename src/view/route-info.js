@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {createHTMLElement} from '../utils/rendering';
+import AbstractClassView from './abstract-class';
 
 export const travelInfoTemplate = (tripEvents) => {
   const travelPath = tripEvents.length <= 3
@@ -29,28 +29,16 @@ export const travelInfoTemplate = (tripEvents) => {
           </section>`;
 };
 
-export default class RouteInfoView {
-  #element = null;
+export default class RouteInfoView extends AbstractClassView {
   #tripEvent = null;
 
   constructor(tripEvent) {
+    super();
     this.#tripEvent = tripEvent;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createHTMLElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return travelInfoTemplate(this.#tripEvent);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
 

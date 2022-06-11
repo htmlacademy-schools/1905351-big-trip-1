@@ -1,6 +1,5 @@
 import dayjs from 'dayjs';
-import {destinations} from '../mock/destinations';
-import {eventTypes} from '../mock/event-types';
+import { destinations, eventTypes } from '../utils/constants';
 import AbstractClassView from './abstract-class';
 import {
   createDestinationsListComponent,
