@@ -193,17 +193,21 @@ export default class EditFormView extends SmartView {
 
   #startTimeChangeHandler = (evt) => {
     evt.preventDefault();
+    const fromDate = new Date(this._point.dateFrom);
+    const toDate = new Date(this._point.dateTo);
     this.updateData({
-      dateFrom: this._point.dateFrom,
-      tripDuration: getDuration(new Date(this._point.dateFrom), this._point.dateTo)
+      dateFrom: fromDate,
+      tripDuration: getDuration(fromDate, toDate)
     }, true);
   }
 
   #endTimeChangeHandler = (evt) => {
     evt.preventDefault();
+    const fromDate = new Date(this._point.dateFrom);
+    const toDate = new Date(this._point.dateTo);
     this.updateData({
-      dateTo: this._point.dateTo,
-      tripDuration: getDuration(this._point.dateFrom, new Date(this._point.dateTo))
+      dateTo: toDate,
+      tripDuration: getDuration(fromDate, toDate)
     }, true);
   }
 
