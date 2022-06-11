@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
-import { destinations } from './destinations';
-import { eventTypes } from './event-types';
+import { destinations, eventTypes } from '../utils/constants';
+import { nanoid } from 'nanoid';
 
 const getRandomInteger = (min, max) => {
   const lower = Math.ceil(Math.min(min, max));
@@ -128,7 +128,7 @@ export const generatePoint = () => {
     'dateTo': dates.endDate,
     'tripDuration': getDuration(dates.beginDate, dates.endDate),
     'destination': generateDestination(),
-    'id': getRandomInteger(1, 100),
+    'id': nanoid(),
     'isFavorite': Boolean(getRandomInteger(0, 1)),
     'offers': getOffers(),
     'type': getType().element,

@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import AbstractClassView from './abstract-class';
-import {createTripEventsListComponent} from '../utils/component-create';
+import { createTripEventsListComponent } from '../utils/component-create';
 
 export const listedTravelTemplate = (tripEvent) => {
   const {offers, destination, type, dateTo, dateFrom, basePrice, isFavorite, tripDuration} = tripEvent;
@@ -68,7 +68,7 @@ export const listedTravelTemplate = (tripEvent) => {
             </li>`;
 };
 
-export default class TripEventsListView extends AbstractClassView {
+export default class PointsListView extends AbstractClassView {
   #tripEvent = null;
 
   constructor(tripEvent) {
@@ -85,9 +85,19 @@ export default class TripEventsListView extends AbstractClassView {
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
   }
 
+  setFavoriteClickHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.event__favorite-btn').addEventListener('click', this.#favoriteClickHandler);
+  }
+
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
+  }
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.favoriteClick();
   }
 }
 
