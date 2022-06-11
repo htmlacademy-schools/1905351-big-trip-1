@@ -75,6 +75,7 @@ export default class PointPresenter {
   }
 
   #replaceFormToPoint = () => {
+    this.#pointEditComponent.reset(this.#point);
     replace(this.#pointsListComponent, this.#pointEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     this.#state = State.VIEW;

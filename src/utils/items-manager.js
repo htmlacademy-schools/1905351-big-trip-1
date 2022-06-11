@@ -1,3 +1,5 @@
+import { sortBy } from './constants';
+
 export const updateItems = (items, toUpdate) => {
   const index = items.findIndex((item) => item.id === toUpdate.id);
 
@@ -12,7 +14,6 @@ export const updateItems = (items, toUpdate) => {
   ];
 };
 
-//sortmethods
 const durationSort = (a, b) => {
   const getMinutes = (tripDuration) => tripDuration.days * 24 * 60 + tripDuration.hours * 60 + tripDuration.minutes;
 
@@ -21,13 +22,13 @@ const durationSort = (a, b) => {
   return firstDuration - secondDuration;
 };
 
-export const sortItemsBy = (sortBy) => {
-  switch (sortBy) {
-    case 'datetime':
+export const sortItemsBy = (sortType) => {
+  switch (sortType) {
+    case sortBy.day:
       return (a,b) => a.dateFrom - b.dateFrom;
-    case 'duration':
+    case sortBy.duration:
       return durationSort;
-    case 'price':
+    case sortBy.price:
       return (a, b) => a.basePrice - b.basePrice;
     default:
       return 0;

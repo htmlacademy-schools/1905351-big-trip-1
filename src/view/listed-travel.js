@@ -10,7 +10,7 @@ export const listedTravelTemplate = (tripEvent) => {
   const startDatetime = dayjs(dateFrom).format('YYYY-MM-DDTHH:mm');
   const endTime = dayjs(dateTo).format('HH:mm');
   const endDatetime = dayjs(dateTo).format('YYYY-MM-DDTHH:mm');
-  const tripEvents = createTripEventsListComponent(offers);
+  const tripEvents = createTripEventsListComponent(offers[type]);
 
   const formatDuration = (timeInterval) => {
     const result = [];

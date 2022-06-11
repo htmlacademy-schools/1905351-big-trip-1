@@ -8,10 +8,9 @@ import {
 } from '../utils/component-create';
 
 export const formCreationTemplate = (tripEvent) => {
-  const {offers, destination} = tripEvent;
-  const eventType = tripEvent.type;
+  const {offers, type: eventType, destination} = tripEvent;
   const templateDatetime = dayjs().add(1, 'day').hour(10).minute(0).format('DD/MM/YY HH:mm');
-  const offersList = createOfferListComponent(offers, true);
+  const offersList = createOfferListComponent(offers[eventType], true);
   const eventTypeItems = createEventTypesListComponent(eventTypes(), eventType);
   const photosList = createPicturesListComponent(destination.pictures);
   const destinationOptions = createDestinationsListComponent(destinations);

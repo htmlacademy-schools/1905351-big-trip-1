@@ -34,7 +34,6 @@ export default class SortingView extends AbstractClassView{
     return sortTemplate();
   }
 
-  //sorthandler
   setSortTypeChangeHandler = (callback) => {
     this._callback.sortTypeChange = callback;
     this.element.addEventListener('change', this.#sortTypeChangeHandler);
