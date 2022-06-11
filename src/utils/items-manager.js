@@ -12,6 +12,7 @@ export const updateItems = (items, toUpdate) => {
   ];
 };
 
+//sortmethods
 const durationSort = (a, b) => {
   const getMinutes = (tripDuration) => tripDuration.days * 24 * 60 + tripDuration.hours * 60 + tripDuration.minutes;
 

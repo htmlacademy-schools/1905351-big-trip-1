@@ -25,7 +25,7 @@ export default class TripPresenter {
 
   #tripPoints = [];
   #pointPresenter = new Map();
-
+  //sorttype
   #currentSortType = sortBy.day;
 
   constructor(mainElement) {
@@ -74,6 +74,7 @@ export default class TripPresenter {
     this.#currentSortType = sortType;
   }
 
+  //sort
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
       return;
@@ -84,6 +85,7 @@ export default class TripPresenter {
     this.#renderTripPointsList();
   }
 
+  //rendersort
   #renderSort = () => {
     renderItem(this.#tripEventsElement, this.#tripSortComponent, importPositions.afterBegin);
     this.#tripSortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
