@@ -103,7 +103,7 @@ export default class EditFormView extends SmartView {
     return formEditTemplate(this._point);
   }
 
-  //removeDatePickersInstances
+  //removeDatePickersInstances!
   removeElement = () => {
     super.removeElement();
 
@@ -124,7 +124,7 @@ export default class EditFormView extends SmartView {
     );
   }
 
-  //datepickers
+  //datepickers!
   #setDatepicker = () => {
     this.#datepickerFrom = flatpickr(
       this.element.querySelector('#event-start-time-1'),
@@ -193,7 +193,7 @@ export default class EditFormView extends SmartView {
     }, false);
   }
 
-  //fromDateChange
+  //fromDateChange!
   #startTimeChangeHandler = (evt) => {
     evt.preventDefault();
     const fromDate = new Date(this._point.dateFrom);
@@ -204,7 +204,7 @@ export default class EditFormView extends SmartView {
     }, true);
   }
 
-  //toDateChange
+  //toDateChange!
   #endTimeChangeHandler = (evt) => {
     evt.preventDefault();
     const fromDate = new Date(this._point.dateFrom);
