@@ -1,18 +1,5 @@
 import { sortBy } from './constants';
-
-export const updateItems = (items, toUpdate) => {
-  const index = items.findIndex((item) => item.id === toUpdate.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    toUpdate,
-    ...items.slice(index + 1),
-  ];
-};
+import {getTotalPrice} from './data-manager';
 
 const durationSort = (a, b) => {
   const getMinutes = (tripDuration) => tripDuration.days * 24 * 60 + tripDuration.hours * 60 + tripDuration.minutes;
@@ -29,9 +16,7 @@ export const sortItemsBy = (sortType) => {
     case sortBy.duration:
       return durationSort;
     case sortBy.price:
-      return (a, b) => a.basePrice - b.basePrice;
-    default:
-      return 0;
+      return (a, b) => getTotalPrice(a) - getTotalPrice(b);
   }
 };
 

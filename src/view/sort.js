@@ -2,9 +2,9 @@ import AbstractClassView from './abstract-class';
 import { sortBy } from '../utils/constants';
 
 
-export const sortTemplate = () => `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
+export const sortTemplate = (sortType) => `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">
             <div class="trip-sort__item  trip-sort__item--day">
-              <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day" data-sort-type="${sortBy.day}" checked>
+              <input id="sort-day" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-day" data-sort-type="${sortBy.day}" ${sortType === sortBy.day ? 'checked' : ''}>
               <label class="trip-sort__btn" for="sort-day">Day</label>
             </div>
 
@@ -14,12 +14,12 @@ export const sortTemplate = () => `<form class="trip-events__trip-sort  trip-sor
             </div>
 
             <div class="trip-sort__item  trip-sort__item--time">
-              <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-time" data-sort-type="${sortBy.duration}">
+              <input id="sort-time" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-time" data-sort-type="${sortBy.duration}" ${sortType === sortBy.duration ? 'checked' : ''}>
               <label class="trip-sort__btn" for="sort-time">Time</label>
             </div>
 
             <div class="trip-sort__item  trip-sort__item--price">
-              <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price" data-sort-type="${sortBy.price}">
+              <input id="sort-price" class="trip-sort__input  visually-hidden" type="radio" name="trip-sort" value="sort-price" data-sort-type="${sortBy.price}" ${sortType === sortBy.price ? 'checked' : ''}>
               <label class="trip-sort__btn" for="sort-price">Price</label>
             </div>
 
@@ -30,8 +30,15 @@ export const sortTemplate = () => `<form class="trip-events__trip-sort  trip-sor
           </form>`;
 
 export default class SortingView extends AbstractClassView{
+  #sortType = sortBy.day
+
+  constructor(sortType) {
+    super();
+    this.#sortType = sortType;
+  }
+
   get template() {
-    return sortTemplate();
+    return sortTemplate(this.#sortType);
   }
 
   setSortTypeChangeHandler = (callback) => {

@@ -1,6 +1,7 @@
 import PointsListView from '../view/listed-travel';
 import EditFormView from '../view/form-edit';
 import { renderItem, importPositions, replace, remove } from '../utils/rendering';
+import {updateType, userAction} from '../utils/constants';
 
 
 const State = {
@@ -38,6 +39,7 @@ export default class PointPresenter {
     this.#pointsListComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setViewClickHandler(this.#handleViewClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (prevPointsListComponent === null || prevPointEditComponent === null) {
       renderItem(this.#tripPointsListElement, this.#pointsListComponent, importPositions.beforeEnd);
@@ -97,11 +99,28 @@ export default class PointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#changeData(userAction.updatePoint, updateType.minor, {...this.#point, isFavorite: !this.#point.isFavorite});
   }
 
   #handleFormSubmit = (point) => {
-    this.#changeData(point);
+    // const isMinorUpdate =
+    //   !isDatesEqual(this.#point.dateFrom, point.dateFrom) ||
+    //   !isDatesEqual(this.#point.dateTo, point.dateTo) ||
+    //   (this.#point.basePrice !== point.basePrice);
+
+    this.#changeData(
+      userAction.updatePoint,
+      updateType.minor,
+      point,
+    );
     this.#replaceFormToPoint();
+  }
+
+  #handleDeleteClick = (task) => {
+    this.#changeData(
+      userAction.removePoint,
+      updateType.minor,
+      task,
+    );
   }
 }

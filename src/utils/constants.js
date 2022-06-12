@@ -58,3 +58,21 @@ export const sortBy = {
   duration: 'duration',
   price: 'price',
 };
+
+export const userAction = {
+  updatePoint: 'update',
+  addPoint: 'add',
+  removePoint: 'remove',
+};
+
+export const updateType = {
+  patch: 'patch',
+  minor: 'minor',
+  major: 'major',
+};
+
+export const filterType = {
+  everything: 'everything',
+  future: 'future',
+  past: 'past'
+};

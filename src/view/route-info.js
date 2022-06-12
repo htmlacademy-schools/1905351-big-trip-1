@@ -1,11 +1,12 @@
 import dayjs from 'dayjs';
 import AbstractClassView from './abstract-class';
+import {getTotalPrice} from '../utils/data-manager';
 
 export const travelInfoTemplate = (tripEvents) => {
   const travelPath = tripEvents.length <= 3
     ? tripEvents.map((trip) => trip.destination.name).join(' — ')
     : `${tripEvents[0].destination.name} — ... — ${tripEvents[tripEvents.length - 1].destination.name}`;
-  const travelCost = tripEvents.reduce((sum, current) => sum + current.basePrice, 0);
+  const travelCost = tripEvents.reduce((sum, current) => sum + getTotalPrice(current), 0);
 
   const isSameMonth = (firstDate, secondDate) => dayjs(firstDate.dateFrom).month() === dayjs(secondDate.dateFrom).month();
   const startDay = dayjs(tripEvents[0].dateFrom).format('MMM D');

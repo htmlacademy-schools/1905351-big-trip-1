@@ -1,8 +1,8 @@
-import {descriptionSentences, destinations, eventTypes, offerTitles} from './constants';
+import {descriptionSentences, destinations, eventTypes, filterType, offerTitles} from './constants';
 import {getRandomElement, getRandomInteger} from './tools';
 import dayjs from 'dayjs';
 
-export const generateOffers = () => {
+export const generateOffers = (isEmptyPoint = false) => {
   const result = {};
 
   for (const type of eventTypes()) {
@@ -15,7 +15,7 @@ export const generateOffers = () => {
         id: j + 1,
         title: nextTitle,
         price: getRandomInteger(2, 30) * 10,
-        isActive: Boolean(getRandomInteger(0, 1))
+        isActive: isEmptyPoint ? false : Boolean(getRandomInteger(0, 1))
       });
       titles.splice(titles.indexOf(nextTitle), 1);
     }
@@ -91,6 +91,22 @@ export const generateDestination = () => {
 
   return resDestinations;
 };
+
+export const getTotalPrice = (point) => {
+  let res = point.basePrice;
+  res += point.offers[point.type].reduce(
+    (accum, offer) => offer.isActive ? accum + offer.price : accum, 0);
+
+  return res;
+};
+
+export const filter = {
+  [filterType.everything]: (points) => points.filter((point) => point),
+  [filterType.future]: (points) => points.filter((point) => new Date(point.dateFrom) > new Date()),
+  [filterType.past]: (points) => points.filter((point) => new Date(point.dateTo) < new Date()),
+};
+
+export const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB);
 
 export const getRandomDestination = () => getRandomElement(generateDestination()).element;
 

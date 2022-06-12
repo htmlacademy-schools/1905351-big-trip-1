@@ -60,6 +60,7 @@ export const remove = (component) => {
     throw new Error('This item is not removable');
   }
 
+
   component.element.remove();
   component.removeElement();
 };
