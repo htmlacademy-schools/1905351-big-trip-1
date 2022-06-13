@@ -8,14 +8,14 @@ import {
   createEventTypesListComponent,
   createOfferListComponent, createPicturesListComponent
 } from '../utils/component-create';
-import {generateDestination, getDuration} from '../utils/data-manager';
+import {generateDestination, getDuration, getTotalPrice} from '../utils/data-manager';
 
 
 export const formEditTemplate = (tripEvent) => {
   const {offers, destination, type, dateTo, dateFrom, basePrice} = tripEvent;
   const startDatetime = dayjs(dateFrom).format('DD/MM/YY HH:mm ');
   const endDatetime = dayjs(dateTo).format('DD/MM/YY HH:mm');
-  const offersList = createOfferListComponent(offers[type]);
+  const offersList = createOfferListComponent(offers[type], type);
   const eventTypeLabel = type.charAt(0).toUpperCase() + type.slice(1);
   const eventTypeItems = createEventTypesListComponent(eventTypes(), type);
   const destinationOptions = createDestinationsListComponent(destinations);
@@ -103,7 +103,6 @@ export default class EditFormView extends SmartView {
     return formEditTemplate(this._point);
   }
 
-  //removeDatePickersInstances!
   removeElement = () => {
     super.removeElement();
 
@@ -124,7 +123,6 @@ export default class EditFormView extends SmartView {
     );
   }
 
-  //datepickers!
   #setDatepicker = () => {
     this.#datepickerFrom = flatpickr(
       this.element.querySelector('#event-start-time-1'),
@@ -149,13 +147,13 @@ export default class EditFormView extends SmartView {
 
   #dateFromChangeHandler = ([userDate]) => {
     this.updateData({
-      dateFrom: userDate.toISOString(),
+      dateFrom: userDate,
     });
   }
 
   #dateToChangeHandler = ([userDate]) => {
     this.updateData({
-      dateTo: userDate.toISOString(),
+      dateTo: userDate,
     });
   }
 
@@ -177,6 +175,11 @@ export default class EditFormView extends SmartView {
       .addEventListener('change', this.#endTimeChangeHandler);
     this.element.querySelector('.event__input--price')
       .addEventListener('change', this.#basePriceChangeHandler);
+    const offersElement = this.element.querySelector('.event__section--offers');
+    if (offersElement) {
+      offersElement.addEventListener('input', this.#changeOffersHandler);
+    }
+
   }
 
   #typeGroupClickHandler = (evt) => {
@@ -193,33 +196,33 @@ export default class EditFormView extends SmartView {
     }, false);
   }
 
-  //fromDateChange!
+  #changeOffersHandler = (evt) => {
+    evt.preventDefault();
+    this._point.offers[this._point.type][evt.target.value - 1].isActive = !this._point.offers[this._point.type][evt.target.value - 1].isActive;
+  }
+
   #startTimeChangeHandler = (evt) => {
     evt.preventDefault();
-    const fromDate = new Date(this._point.dateFrom);
-    const toDate = new Date(this._point.dateTo);
     this.updateData({
-      dateFrom: fromDate,
-      tripDuration: getDuration(fromDate, toDate)
+      dateFrom: this._point.dateFrom,
+      tripDuration: getDuration(this._point.dateFrom, this._point.dateTo)
     }, true);
   }
 
-  //toDateChange!
   #endTimeChangeHandler = (evt) => {
     evt.preventDefault();
-    const fromDate = new Date(this._point.dateFrom);
-    const toDate = new Date(this._point.dateTo);
     this.updateData({
-      dateTo: toDate,
-      tripDuration: getDuration(fromDate, toDate)
+      dateTo: this._point.dateTo,
+      tripDuration: getDuration(this._point.dateFrom, this._point.dateTo)
     }, true);
   }
 
   #basePriceChangeHandler = (evt) => {
     evt.preventDefault();
     this.updateData({
-      basePrice: evt.target.value
+      basePrice: +evt.target.value
     }, true);
+    getTotalPrice(this._point);
   }
 
   setViewClickHandler = (callback) => {
@@ -237,9 +240,19 @@ export default class EditFormView extends SmartView {
     this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
   }
 
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
+  }
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this._callback.formSubmit(this._point);
+  }
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(this._point);
   }
 
   static parsePointToData = (point) => ({ ...point });

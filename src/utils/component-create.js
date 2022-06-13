@@ -1,11 +1,11 @@
-export const createOfferListComponent = (offers, isCreation = false) => {
+export const createOfferListComponent = (offers, type) => {
   const createOfferComponent = (offer) => {
-    const { title, price, type, isActive, id } = offer;
-    const isChecked = isActive && !isCreation ? ' checked=""' : '';
+    const { title, price, isActive, id } = offer;
+    const isChecked = isActive ? ' checked=""' : '';
 
     return `<div class="event__available-offers">
                       <div class="event__offer-selector">
-                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" name="event-offer-${type}" ${isChecked}>
+                        <input class="event__offer-checkbox  visually-hidden" id="event-offer-${type}-${id}" type="checkbox" value="${id}" name="event-offer-${type}" ${isChecked}>
                         <label class="event__offer-label" for="event-offer-${type}-${id}">
                           <span class="event__offer-title">${title}</span>
                           &plus;&euro;&nbsp;

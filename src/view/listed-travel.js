@@ -1,9 +1,10 @@
 import dayjs from 'dayjs';
 import AbstractClassView from './abstract-class';
 import { createTripEventsListComponent } from '../utils/component-create';
+import {getTotalPrice} from '../utils/data-manager';
 
 export const listedTravelTemplate = (tripEvent) => {
-  const {offers, destination, type, dateTo, dateFrom, basePrice, isFavorite, tripDuration} = tripEvent;
+  const {offers, destination, type, dateTo, dateFrom, isFavorite, tripDuration} = tripEvent;
   const startDay = dayjs(dateFrom).format('MMM D');
   const startDate = dayjs(dateFrom).format('YYYY-MM-DD');
   const startTime = dayjs(dateFrom).format('HH:mm');
@@ -11,6 +12,8 @@ export const listedTravelTemplate = (tripEvent) => {
   const endTime = dayjs(dateTo).format('HH:mm');
   const endDatetime = dayjs(dateTo).format('YYYY-MM-DDTHH:mm');
   const tripEvents = createTripEventsListComponent(offers[type]);
+
+  const totalPrice = getTotalPrice(tripEvent);
 
   const formatDuration = (timeInterval) => {
     const result = [];
@@ -49,7 +52,7 @@ export const listedTravelTemplate = (tripEvent) => {
                   <p class="event__duration">${formattedDuration}</p>
                 </div>
                 <p class="event__price">
-                  &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
+                  &euro;&nbsp;<span class="event__price-value">${totalPrice}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 <ul class="event__selected-offers">

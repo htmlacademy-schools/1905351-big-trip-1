@@ -25,6 +25,7 @@ export default class SmartView extends AbstractClassView {
 
     this._point = {...this._point, ...update};
 
+
     if (isDataUpdateOnly) {
       return;
     }
